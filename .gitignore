@@ -1,0 +1,7 @@
+.codelite
+*.phprj
+*.workspace
+
+*.lock
+vendor
+
