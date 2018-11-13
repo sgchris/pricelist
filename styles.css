@@ -1,0 +1,13 @@
+div {
+    border: 1px solid #EEE;
+    border-radius: 3px;
+}
+
+div.pl-wrapper {
+    overflow: hidden;
+}
+
+div.pl-col {
+    float: left;
+    overflow: hidden;
+}

@@ -2,6 +2,7 @@
 
 require 'vendor/autoload.php';
 require 'MyXlsxReader.php';
+require 'PriceListGenerator.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -17,8 +18,17 @@ $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
 $sheet = $spreadsheet->getActiveSheet();
 $data = $sheet->toArray();
 
-echo '<pre>';
-var_dump($data);
+$html = PriceListGenerator::generateHtml($data);
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <?php echo $html; ?>
+</body>
+</html>
 
-//$cells = $spreadsheet->getActiveSheet()->getCellCollection();
 
