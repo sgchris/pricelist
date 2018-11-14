@@ -1,14 +1,14 @@
 <?php
 
 
-class PriceListGenerator {
+class PriceListHTMLGenerator {
     
     protected $data = [];
     
     /**
      * 
      * @param mixed $data 
-     * @return PriceListGenerator
+     * @return PriceListHTMLGenerator
      */
     public function __construct($data = [])
     {
@@ -35,7 +35,7 @@ class PriceListGenerator {
      */
     public static function generateHtml($data) 
     {
-        /* @var PriceListGenerator */
+        /* @var PriceListHTMLGenerator */
         static $plg = null;
         
         // create the object
@@ -88,11 +88,10 @@ class PriceListGenerator {
      */
     protected function getCellHtml($col, $row)
     {
-        $rowMetaData = $this->data[$row][0];
-        $colMetaData = $this->data[0][$col];
+        $html = $this->data[$row][$col];
         
         // process the metadata
-        return $this->data[$row][$col];
+        return $html;
     }
     
     /**
@@ -108,45 +107,7 @@ class PriceListGenerator {
         $rowMetaData = $this->data[$row][0];
         $colMetaData = $this->data[0][$col];
         
-        // process the metadata
-        $styles = [];
-
-        // column meta data
-        if (!empty($colMetaData)) {
-            $props = explode(',', $colMetaData);
-            foreach ($props as $prop) {
-                if ($prop[0] == '#') {
-                    $styles['color'] = $prop;
-                } elseif (preg_match('/^bg#([0-9A-Za-z]{3,6})/i', $prop, $match)) {
-                    $styles[] = 'background:'.preg_replace('/^bg/i', '', $prop);
-                } elseif ($prop == 'italic') {
-                    $styles[] = 'font-style:'.$prop;
-                } elseif ($prop == 'bold') {
-                    $styles[] = 'font-weight:'.$prop;
-                } elseif ($prop == 'underline') {
-                    $styles[] = 'text-decoration:'.$prop;
-                }
-            }
-        }
-        
-        // row meta data
-        if (!empty($rowMetaData)) {
-            $props = explode(',', $rowMetaData);
-            foreach ($props as $prop) {
-                if ($prop[0] == '#') {
-                    $styles['color'] = $prop;
-                } elseif (preg_match('/^bg#([0-9A-Za-z]{3,6})/i', $prop, $match)) {
-                    $styles[] = 'background:'.preg_replace('/^bg/i', '', $prop);
-                } elseif ($prop == 'italic') {
-                    $styles[] = 'font-style:'.$prop;
-                } elseif ($prop == 'bold') {
-                    $styles[] = 'font-weight:'.$prop;
-                } elseif ($prop == 'underline') {
-                    $styles[] = 'text-decoration:'.$prop;
-                }
-            }
-        }
-        return implode(';', $styles);
+        return $colMetaData . $rowMetaData;
     }
     
     

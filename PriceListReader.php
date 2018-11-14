@@ -3,7 +3,7 @@
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class MyXlsxReader {
+class PriceListReader {
     
     /* @var string */
     protected $filePath;
@@ -11,7 +11,7 @@ class MyXlsxReader {
     /**
      * @param string $filePath XLSX file path
      * 
-     * @return MyXlsxReader
+     * @return PriceListReader
      */
     public function __construct($filePath) {
         $this->filePath = $filePath;
@@ -23,7 +23,7 @@ class MyXlsxReader {
      * @return array
      */
     public function getData() {
-        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($this->filePath);
         $sheet = $spreadsheet->getActiveSheet();
         return $sheet->toArray();
     }

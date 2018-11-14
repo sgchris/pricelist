@@ -1,24 +1,25 @@
 <?php
+/**
+ * Using: phpspreadsheet (https://phpspreadsheet.readthedocs.io/en/develop/)
+ */
 
 require 'vendor/autoload.php';
-require 'MyXlsxReader.php';
-require 'PriceListGenerator.php';
 
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+require 'PriceListReader.php';
+require 'PriceListHTMLGenerator.php';
 
-$inputFileName = __DIR__.'/data/Price_List_1.xlsx';
+// get the latest data file
+$inputFileName = getLatestDataFile();
+if (!$inputFileName) {
+    die('No data file');
+}
 
-/** Load $inputFileName to a Spreadsheet Object  **/
-/* @var \PhpOffice\PhpSpreadsheet\Reader\Xlsx */
-//$reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
+// read the data
+$data = PriceListReader::getXlsxData($inputFileName);
 
-/* @var \PhpOffice\PhpSpreadsheet\Spreadsheet */
-$spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
-$sheet = $spreadsheet->getActiveSheet();
-$data = $sheet->toArray();
+// generate the HTML (string)
+$html = PriceListHTMLGenerator::generateHtml($data);
 
-$html = PriceListGenerator::generateHtml($data);
 ?>
 <!DOCTYPE html>
 <html>
@@ -30,5 +31,19 @@ $html = PriceListGenerator::generateHtml($data);
     <?php echo $html; ?>
 </body>
 </html>
+<?php
+
+function getLatestDataFile() 
+{
+    $dataFiles = glob(__DIR__.'/data/*.xlsx');
+    $latestFile = false;
+    foreach ($dataFiles as $dataFile) {
+        if (!$latestFile || filemtime($latestFile) < filemtime($dataFile)) {
+            $latestFile = $dataFile;
+        }
+    }
+    
+    return $latestFile;
+}
 
 
