@@ -65,7 +65,9 @@ class PriceListHTMLGenerator {
             // set the col widths
             var i, maxHeight, 
                 numOfCols = $('#{$this->hash} .pl-col').length;
-            $('#{$this->hash} .pl-col').css('width', (100.0 / numOfCols) + '%');
+            $('#{$this->hash} .pl-col')
+                .css('width', ((100.0 / numOfCols) - 1) + '%')
+                .css('margin-left', '1%');
             
             // set cells heights
             $('#{$this->hash} .pl-col:eq(0) .pl-cell').each(function(rowNum, col) {
