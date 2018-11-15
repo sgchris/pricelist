@@ -3,7 +3,11 @@
 
 class PriceListHTMLGenerator {
     
+    /* @var array */
     protected $data = [];
+    
+    /* @var string */
+    protected $hash = '';
     
     /**
      * 
@@ -13,6 +17,7 @@ class PriceListHTMLGenerator {
     public function __construct($data = [])
     {
         $this->data = $data;
+        $this->hash = uniqid('pl_');//sha1(microtime(true));
     }
     
     
@@ -48,20 +53,57 @@ class PriceListHTMLGenerator {
     
     
     /**
+     * Get the JS related to the current table
+     * 
+     * @return string
+     */
+    public function getJavascript() 
+    {
+        $js = <<<JS
+        <script>
+        $(window).on('load',function() {
+            // set the col widths
+            var i, maxHeight, 
+                numOfCols = $('#{$this->hash} .pl-col').length;
+            $('#{$this->hash} .pl-col').css('width', (100.0 / numOfCols) + '%');
+            
+            // set cells heights
+            $('#{$this->hash} .pl-col:eq(0) .pl-cell').each(function(rowNum, col) {
+                maxHeight = 0;
+                for (i=0; i<numOfCols; ++i) {
+                    // rowNum's cell in i's column
+                    var targetCell = $('#{$this->hash} .pl-col:eq('+i+') .pl-cell:eq('+rowNum+')');
+                    if (targetCell.get(0).clientHeight > maxHeight) {
+                        maxHeight = targetCell.get(0).clientHeight;
+                    }
+                }
+                
+                for (i=0; i<numOfCols; ++i) {
+                    // rowNum's cell in i's column
+                    var targetCell = $('#{$this->hash} .pl-col:eq('+i+') .pl-cell:eq('+rowNum+')');
+                    targetCell.css('height', maxHeight + 'px');
+                }
+            });
+        });
+        </script>
+JS;
+        return $js;
+        
+    }
+    
+    
+    /**
      * 
      * @return string
      */
     public function getHtml()
     {
-        echo '<!--';
-        var_dump($this->data);
-        echo '-->';
         if (empty($this->data) || !isset($this->data[0]) || !is_array($this->data[0])) {
             return '<!-- price list data is not valid -->';
         }
         
         // start the HTML
-        $html = '<div class="pl-wrapper">'.PHP_EOL;
+        $html = '<div class="pl-wrapper" id="'.($this->hash).'">'.PHP_EOL;
         
         $numOfCols = count($this->data[0]) - 1;
         for ($col = 1; $col < $numOfCols + 1; ++$col) {
@@ -75,6 +117,8 @@ class PriceListHTMLGenerator {
         }
         
         $html.= '</div>'.PHP_EOL;
+        
+        $html.= $this->getJavascript().PHP_EOL;
         
         return $html;
     }
@@ -90,8 +134,11 @@ class PriceListHTMLGenerator {
     {
         $html = $this->data[$row][$col];
         
+        // replace images
+        $html = preg_replace('/\[([^\]]+?)\.(jpg|gif|png)\]/i', '<img src="$1.$2" />', $html);
+        
         // process the metadata
-        return $html;
+        return $html; 
     }
     
     /**
@@ -107,7 +154,7 @@ class PriceListHTMLGenerator {
         $rowMetaData = $this->data[$row][0];
         $colMetaData = $this->data[0][$col];
         
-        return $colMetaData . $rowMetaData;
+        return $colMetaData .';'. $rowMetaData;
     }
     
     

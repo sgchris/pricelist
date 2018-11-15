@@ -1,13 +1,32 @@
-div {
-    border: 1px solid #EEE;
-    border-radius: 3px;
-}
-
 div.pl-wrapper {
     overflow: hidden;
+    direction: rtl;
 }
 
-div.pl-col {
+.pl-col {
     float: left;
     overflow: hidden;
+    border: 1px solid #DDD;
+    box-sizing: border-box;
+}
+
+.pl-cell {
+    padding: 5px 10px;
+    overflow: hidden;
+    box-sizing: border-box;
+    border-top: 1px solid #DDD;
+}
+
+.pl-cell:first-child {
+    border-top: 0;
+}
+
+.pl-cell:nth-child(even) {
+    background: #EEE;
+}
+
+.pl-cell img {
+    max-width: 100%;
+    display: block;
+    margin-bottom: 10px;
 }

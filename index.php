@@ -26,9 +26,14 @@ $html = PriceListHTMLGenerator::generateHtml($data);
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="styles.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
 </head>
 <body>
+    <div style="width: 500px;">
     <?php echo $html; ?>
+    </div>
 </body>
 </html>
 <?php
