@@ -17,7 +17,7 @@ class PriceListHTMLGenerator {
     public function __construct($data = [])
     {
         $this->data = $data;
-        $this->hash = uniqid('pl_');//sha1(microtime(true));
+        $this->hash = uniqid('pl_');
     }
     
     
@@ -61,32 +61,58 @@ class PriceListHTMLGenerator {
     {
         $js = <<<JS
         <script>
-        $(window).on('load',function() {
-            // set the col widths
-            var i, maxHeight, 
-                numOfCols = $('#{$this->hash} .pl-col').length;
-            $('#{$this->hash} .pl-col')
-                .css('width', ((100.0 / numOfCols) - 1) + '%')
-                .css('margin-left', '1%');
-            
-            // set cells heights
-            $('#{$this->hash} .pl-col:eq(0) .pl-cell').each(function(rowNum, col) {
-                maxHeight = 0;
-                for (i=0; i<numOfCols; ++i) {
-                    // rowNum's cell in i's column
-                    var targetCell = $('#{$this->hash} .pl-col:eq('+i+') .pl-cell:eq('+rowNum+')');
-                    if (targetCell.get(0).clientHeight > maxHeight) {
-                        maxHeight = targetCell.get(0).clientHeight;
-                    }
+
+        if (!window._fixPricelistHeights) {
+            window._fixPricelistHeights = function(uniqueHash) {
+                
+                // set the col widths
+                var i, maxHeight, 
+                    numOfCols = $('#'+uniqueHash+' .pl-col').length;
+
+                var colWidth = 100.0 / numOfCols;
+                // adjust col width by screen size
+                if (window.outerWidth < 980 && colWidth < 32) {
+                    colWidth = 33.3; // max three cols
+                }
+                if (window.outerWidth < 600 && colWidth < 49) {
+                    colWidth = 50; // max 2 cols
                 }
                 
-                for (i=0; i<numOfCols; ++i) {
-                    // rowNum's cell in i's column
-                    var targetCell = $('#{$this->hash} .pl-col:eq('+i+') .pl-cell:eq('+rowNum+')');
-                    targetCell.css('height', maxHeight + 'px');
-                }
-            });
+
+                $('#'+uniqueHash+' .pl-col')
+                    .css('width', (colWidth - 1) + '%')
+                    .css('margin-left', '1%');
+                
+                // set cells heights
+                $('#'+uniqueHash+' .pl-col:eq(0) .pl-cell').each(function(rowNum, col) {
+                    maxHeight = 0;
+                    for (i=0; i<numOfCols; ++i) {
+                        // rowNum's cell in i's column
+                        var targetCell = $('#'+uniqueHash+' .pl-col:eq('+i+') .pl-cell:eq('+rowNum+')');
+                        if (targetCell.get(0).offsetHeight > maxHeight) {
+                            maxHeight = targetCell.get(0).offsetHeight;
+                        }
+                    }
+                    
+                    for (i=0; i<numOfCols; ++i) {
+                        // rowNum's cell in i's column
+                        var targetCell = $('#'+uniqueHash+' .pl-col:eq('+i+') .pl-cell:eq('+rowNum+')');
+                        targetCell.css('height', (maxHeight) + 'px');
+                    }
+                });
+            };
+        }
+
+        var _resizeTimer_{$this->hash} = null;
+        $(window).on('load',function() {
+            window._fixPricelistHeights('{$this->hash}');
+        }).on('resize',function() {
+            clearTimeout(_resizeTimer_{$this->hash});
+            _resizeTimer_{$this->hash} = setTimeout(function() {
+                window._fixPricelistHeights('{$this->hash}');
+            }, 500);
         });
+
         </script>
 JS;
         return $js;
@@ -118,6 +144,7 @@ JS;
             $html.= '</div>'.PHP_EOL;
         }
         
+        $html.= '<div class="pl-clearfix"></div>'.PHP_EOL;
         $html.= '</div>'.PHP_EOL;
         
         $html.= $this->getJavascript().PHP_EOL;

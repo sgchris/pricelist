@@ -1,6 +1,11 @@
 div.pl-wrapper {
-    overflow: hidden;
     direction: rtl;
+}
+
+.pl-clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
 }
 
 .pl-col {
@@ -22,7 +27,7 @@ div.pl-wrapper {
 }
 
 .pl-cell:nth-child(even) {
-    Xbackground: #EEE;
+    /* background: #EEE; */
 }
 
 .pl-cell img {

@@ -31,8 +31,8 @@ $html = PriceListHTMLGenerator::generateHtml($data);
         crossorigin="anonymous"></script>
 </head>
 <body>
-    <div style="width: 500px;">
-    <?php echo $html; ?>
+    <div>
+        <?php echo $html; ?>
     </div>
 </body>
 </html>
