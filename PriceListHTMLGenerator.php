@@ -62,8 +62,10 @@ class PriceListHTMLGenerator {
         $js = <<<JS
         <script>
 
-        if (!window._fixPricelistHeights) {
-            window._fixPricelistHeights = function(uniqueHash) {
+        if (!window._fixPricelistDimensions) {
+            // adjustDimensionsInPixels is setting height in pixels after it was set to auto
+            // to adjust the height of the cells
+            window._fixPricelistDimensions = function(uniqueHash, adjustDimensionsInPixels) {
                 
                 // set the col widths
                 var i, maxHeight, 
@@ -85,31 +87,44 @@ class PriceListHTMLGenerator {
                 
                 // set cells heights
                 $('#'+uniqueHash+' .pl-col:eq(0) .pl-cell').each(function(rowNum, col) {
-                    maxHeight = 0;
-                    for (i=0; i<numOfCols; ++i) {
-                        // rowNum's cell in i's column
-                        var targetCell = $('#'+uniqueHash+' .pl-col:eq('+i+') .pl-cell:eq('+rowNum+')');
-                        if (targetCell.get(0).offsetHeight > maxHeight) {
-                            maxHeight = targetCell.get(0).offsetHeight;
+                    if (adjustDimensionsInPixels) {
+                        maxHeight = 0;
+                        for (i=0; i<numOfCols; ++i) {
+                            // rowNum's cell in i's column
+                            var targetCell = $('#'+uniqueHash+' .pl-col:eq('+i+') .pl-cell:eq('+rowNum+')');
+                            if (targetCell.get(0).offsetHeight > maxHeight) {
+                                maxHeight = targetCell.get(0).offsetHeight;
+                            }
                         }
                     }
                     
                     for (i=0; i<numOfCols; ++i) {
                         // rowNum's cell in i's column
                         var targetCell = $('#'+uniqueHash+' .pl-col:eq('+i+') .pl-cell:eq('+rowNum+')');
-                        targetCell.css('height', (maxHeight) + 'px');
+                        if (adjustDimensionsInPixels) {
+                            targetCell.css('height', (maxHeight) + 'px');
+                        } else {
+                            targetCell.css('height', 'auto');
+                        }
                     }
                 });
+
+                // recall the function with setting the actual height in pixels
+                if (!adjustDimensionsInPixels) {
+                    setTimeout(function() {
+                        _fixPricelistDimensions(uniqueHash, 'adjustDimensionsInPixels = true');
+                    }, 50);
+                }
             };
         }
 
         var _resizeTimer_{$this->hash} = null;
         $(window).on('load',function() {
-            window._fixPricelistHeights('{$this->hash}');
+            window._fixPricelistDimensions('{$this->hash}');
         }).on('resize',function() {
             clearTimeout(_resizeTimer_{$this->hash});
             _resizeTimer_{$this->hash} = setTimeout(function() {
-                window._fixPricelistHeights('{$this->hash}');
+                window._fixPricelistDimensions('{$this->hash}');
             }, 500);
         });
 
