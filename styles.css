@@ -9,6 +9,7 @@ div.pl-wrapper {
 }
 
 .pl-col {
+    text-align: center;
     float: left;
     overflow: hidden;
     border: 1px solid #DDD;
@@ -24,6 +25,16 @@ div.pl-wrapper {
 
 .pl-cell:first-child {
     border-top: 0;
+    font-size: 1.5em;
+    font-weight: bold;
+    
+    color: #000;
+    background: #F0F5F8;
+
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    
+
 }
 
 .pl-cell:nth-child(even) {

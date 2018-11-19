@@ -40,14 +40,7 @@ class PriceListHTMLGenerator {
      */
     public static function generateHtml($data) 
     {
-        /* @var PriceListHTMLGenerator */
-        static $plg = null;
-        
-        // create the object
-        if (is_null($plg)) {
-            $plg = new self();
-        }
-        
+        $plg = new self();
         return $plg->setData($data)->getHtml();
     }
     
@@ -177,6 +170,9 @@ JS;
     protected function getCellHtml($col, $row)
     {
         $html = $this->data[$row][$col];
+        
+        // new lines 
+        $html = nl2br($html);
         
         // replace images
         $html = preg_replace('/\[([^\]]+?)\.(jpg|gif|png)\]/i', '<img src="$1.$2" />', $html);
